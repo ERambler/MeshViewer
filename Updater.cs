@@ -64,7 +64,22 @@ public static class Updater
         {
             Directory.CreateDirectory(Home);
             string archive = File.Exists(source) ? source : Path.Combine(Home, "update.zip");      // локальный zip — тот же путь установки
-            if (archive != source) File.WriteAllBytes(archive, NativeHttp.Get(source, TimeSpan.FromMinutes(10)));
+            if (archive != source)
+            {
+                // сеть бывает капризной — несколько попыток, прежде чем признать неудачу
+                for (int attempt = 1; ; attempt++)
+                {
+                    try
+                    {
+                        File.WriteAllBytes(archive, NativeHttp.Get(source, TimeSpan.FromMinutes(10)));
+                        break;
+                    }
+                    catch (Exception e) when (attempt < 3 && e is not OutOfMemoryException)
+                    {
+                        Thread.Sleep(2000);
+                    }
+                }
+            }
             string staging = Path.Combine(Home, "update");
             if (Directory.Exists(staging)) Directory.Delete(staging, true);
             ZipFile.ExtractToDirectory(archive, staging);

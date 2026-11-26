@@ -19,6 +19,8 @@
     <Description>Быстрый просмотрщик 3D-моделей GLB (glTF) и OBJ с текстурами</Description>
     <RepositoryUrl>https://github.com/ERambler/MeshViewer</RepositoryUrl>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <!-- без суффикса «+хэш коммита»: версия продукта в свойствах exe — ровно «0.1» -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <!-- Компактный и быстрый: AOT без того, что просмотрщику не нужно. Код при этом оптимизируется по скорости. -->
