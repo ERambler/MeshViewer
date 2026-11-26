@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishAot>true</PublishAot>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Версия живёт здесь и только здесь: её несут свойства exe, git-тег (v0.1), релиз GitHub и обновитель. -->
+  <PropertyGroup>
+    <Version>0.1</Version>
+    <Product>MeshViewer</Product>
+    <Company>ERambler</Company>
+    <Authors>ERambler</Authors>
+    <Copyright>Copyright © 2026 ERambler</Copyright>
+    <Description>Быстрый просмотрщик 3D-моделей GLB (glTF) и OBJ с текстурами</Description>
+    <RepositoryUrl>https://github.com/ERambler/MeshViewer</RepositoryUrl>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- Компактный и быстрый: AOT без того, что просмотрщику не нужно. Код при этом оптимизируется по скорости. -->
+  <PropertyGroup>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <EventSourceSupport>false</EventSourceSupport>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <DebuggerSupport Condition="'$(Configuration)' == 'Release'">false</DebuggerSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Окно берёт иконку из этого ресурса — так устроен MonoGame DesktopGL -->
+    <EmbeddedResource Include="Icon.bmp">
+      <LogicalName>Icon.bmp</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- Итог публикации — publish\MeshViewer.exe вместе с SDL2.dll и openal.dll. По умолчанию компилятор кладёт
+       native-exe ещё и в bin\...\native\ — там он без своих DLL и молча падает. Отправляем его в obj\,
+       чтобы в проекте оставался один рабочий exe — тот, что в publish\. -->
+  <PropertyGroup>
+    <NativeOutputPath>$(BaseIntermediateOutputPath)aot\</NativeOutputPath>
+  </PropertyGroup>
+</Project>
