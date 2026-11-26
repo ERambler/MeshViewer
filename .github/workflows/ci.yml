@@ -23,12 +23,16 @@ jobs:
       - name: Publish (NativeAOT)
         run: dotnet publish -c Release -r win-x64 -o publish
 
+      # MeshViewer.exe — оконная подсистема: без перехвата вывода PowerShell её не ждёт, и код выхода пустой
       - name: Loaders (GLB + OBJ, without a window)
+        shell: pwsh
         run: |
-          publish/MeshViewer.exe --info tests/fixtures/cubes.glb
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-          publish/MeshViewer.exe --info tests/fixtures/cube.obj
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          foreach ($model in 'tests/fixtures/cubes.glb', 'tests/fixtures/cube.obj') {
+            $report = Join-Path $env:RUNNER_TEMP 'info.txt'
+            $process = Start-Process -FilePath publish/MeshViewer.exe -ArgumentList '--info', $model -Wait -PassThru -NoNewWindow -RedirectStandardOutput $report
+            Get-Content $report
+            if ($process.ExitCode -ne 0) { exit 1 }
+          }
 
       - name: Version and release archive
         if: startsWith(github.ref, 'refs/tags/v')
